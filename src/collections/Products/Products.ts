@@ -1,92 +1,90 @@
 import {
   AfterChangeHook,
   BeforeChangeHook,
-} from 'payload/dist/collections/config/types'
-import { PRODUCT_CATEGORIES } from '../../config'
-import { Access, CollectionConfig } from 'payload/types'
-import { Product, User } from '../../payload-types'
+} from "payload/dist/collections/config/types";
+import { PRODUCT_CATEGORIES } from "../../config";
+import { Access, CollectionConfig } from "payload/types";
+import { Product, User } from "../../payload-types";
+import { isAdmin } from "../Users";
 // import { stripe } from '../../lib/stripe'
 
-const addUser: BeforeChangeHook<Product> = async ({
-  req,
-  data,
-}) => {
-  const user = req.user
+const addUser: BeforeChangeHook<Product> = async ({ req, data }) => {
+  const user = req.user;
 
-  return { ...data, user: user.id }
-}
+  return { ...data, user: user.id };
+};
 
-const syncUser: AfterChangeHook<Product> = async ({
-  req,
-  doc,
-}) => {
+const syncUser: AfterChangeHook<Product> = async ({ req, doc }) => {
   const fullUser = await req.payload.findByID({
-    collection: 'users',
+    collection: "users",
     id: req.user.id,
-  })
+  });
 
-  if (fullUser && typeof fullUser === 'object') {
-    const { products } = fullUser
+  if (fullUser && typeof fullUser === "object") {
+    const { products } = fullUser;
 
     const allIDs = [
       ...(products?.map((product) =>
-        typeof product === 'object' ? product.id : product
+        typeof product === "object" ? product.id : product
       ) || []),
-    ]
+    ];
 
     const createdProductIDs = allIDs.filter(
       (id, index) => allIDs.indexOf(id) === index
-    )
+    );
 
-    const dataToUpdate = [...createdProductIDs, doc.id]
+    const dataToUpdate = [...createdProductIDs, doc.id];
 
     await req.payload.update({
-      collection: 'users',
+      collection: "users",
       id: fullUser.id,
       data: {
         products: dataToUpdate,
       },
-    })
+    });
   }
-}
+};
 
 const isAdminOrHasAccess =
   (): Access =>
   ({ req: { user: _user } }) => {
-    const user = _user as User | undefined
+    const user = _user as User | undefined;
 
-    if (!user) return false
-    if (user.role === 'admin') return true
+    if (!user) return false;
+    if (user.role === "admin") return true;
 
-    const userProductIDs = (user.products || []).reduce<
-      Array<string>
-    >((acc, product) => {
-      if (!product) return acc
-      if (typeof product === 'string') {
-        acc.push(product)
-      } else {
-        acc.push(product.id)
-      }
+    const userProductIDs = (user.products || []).reduce<Array<string>>(
+      (acc, product) => {
+        if (!product) return acc;
+        if (typeof product === "string") {
+          acc.push(product);
+        } else {
+          acc.push(product.id);
+        }
 
-      return acc
-    }, [])
+        return acc;
+      },
+      []
+    );
 
     return {
       id: {
         in: userProductIDs,
       },
-    }
-  }
+    };
+  };
 
 export const Products: CollectionConfig = {
-  slug: 'products',
+  slug: "products",
   admin: {
-    useAsTitle: 'name',
+    useAsTitle: "name",
   },
   access: {
-    read: isAdminOrHasAccess(),
+    // read: isAdminOrHasAccess(),
+    read: () => true,
+    create: isAdmin,
     update: isAdminOrHasAccess(),
-    delete: isAdminOrHasAccess(),
+    delete: isAdmin,
   },
   hooks: {
     afterChange: [syncUser],
@@ -134,9 +132,9 @@ export const Products: CollectionConfig = {
   },
   fields: [
     {
-      name: 'user',
-      type: 'relationship',
-      relationTo: 'users',
+      name: "user",
+      type: "relationship",
+      relationTo: "users",
       required: true,
       hasMany: false,
       admin: {
@@ -144,31 +142,41 @@ export const Products: CollectionConfig = {
       },
     },
     {
-      name: 'name',
-      label: 'Name',
-      type: 'text',
+      name: "name",
+      label: "Name",
+      type: "text",
       required: true,
+
+      access: {
+        read: () => true,
+        create: ({ req }) => req.user.role === "admin",
+        update: ({ req }) => req.user.role === "admin",
+      },
     },
     {
-      name: 'description',
-      type: 'textarea',
-      label: 'Product details',
+      name: "description",
+      type: "textarea",
+      label: "Product details",
     },
     {
-      name: 'price',
-      label: 'Price in USD',
+      name: "price",
+      label: "Price in USD",
       min: 0,
       max: 1000,
-      type: 'number',
+      type: "number",
       required: true,
+
+      access: {
+        read: () => true,
+        create: ({ req }) => req.user.role === "admin",
+        update: ({ req }) => req.user.role === "admin",
+      },
     },
     {
-      name: 'category',
-      label: 'Category',
-      type: 'select',
-      options: PRODUCT_CATEGORIES.map(
-        ({ label, value }) => ({ label, value })
-      ),
+      name: "category",
+      label: "Category",
+      type: "select",
+      options: PRODUCT_CATEGORIES.map(({ label, value }) => ({ label, value })),
       required: true,
     },
 
@@ -182,29 +190,29 @@ export const Products: CollectionConfig = {
     // },
 
     {
-      name: 'approvedForSale',
-      label: 'Product Status',
-      defaultValue: 'pending',
+      name: "approvedForSale",
+      label: "Product Status",
+      defaultValue: "approved",
 
       access: {
-        create: ({ req }) => req.user.role === 'admin',
-        read: ({ req }) => req.user.role === 'admin',
-        update: ({ req }) => req.user.role === 'admin',
+        // read: ({ req }) => req.user.role === 'admin',
+        create: ({ req }) => req.user.role === "admin",
+        update: ({ req }) => req.user.role === "admin",
       },
 
-      type: 'select',
+      type: "select",
       options: [
         {
-          label: 'Pending verification',
-          value: 'pending',
+          label: "Pending verification",
+          value: "pending",
         },
         {
-          label: 'Approved',
-          value: 'approved',
+          label: "Approved",
+          value: "approved",
         },
         {
-          label: 'Denied',
-          value: 'denied',
+          label: "Denied",
+          value: "denied",
         },
       ],
     },
@@ -236,24 +244,24 @@ export const Products: CollectionConfig = {
     // },
 
     {
-      name: 'images',
-      type: 'array',
-      label: 'Product images',
+      name: "images",
+      type: "array",
+      label: "Product images",
       minRows: 1,
       maxRows: 4,
       // required: true,
       labels: {
-        singular: 'Image',
-        plural: 'Images',
+        singular: "Image",
+        plural: "Images",
       },
       fields: [
         {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
+          name: "image",
+          type: "upload",
+          relationTo: "media",
           // required: true,
         },
       ],
     },
   ],
-}
+};

@@ -18,7 +18,7 @@ export const appRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const { query, cursor } = input
+      const { query, cursor, limit: lmt } = input
       const { sort, limit, ...queryOpts } = query
 
       const payload = await getPayloadClient()
@@ -36,11 +36,8 @@ export const appRouter = router({
 
       const page = cursor || 1
 
-      const {
-        docs: items,
-        hasNextPage,
-        nextPage,
-      } = await payload.find({
+      const { docs: items, hasNextPage, nextPage } = await payload.find(
+      {
         collection: 'products',
         where: {
           approvedForSale: {
@@ -48,11 +45,14 @@ export const appRouter = router({
           },
           ...parsedQueryOpts,
         },
-        sort,
+        // sort,  
+        // вместе с sort выдает хаотично продукты
         depth: 1,
         limit,
         page,
       })
+      // console.log("**** nextPage:", nextPage);
+      // console.log("===items:", items);
 
       return {
         items,

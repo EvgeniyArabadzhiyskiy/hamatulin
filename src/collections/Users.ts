@@ -1,7 +1,8 @@
 // import { PrimaryActionEmailHtml } from '../components/emails/PrimaryActionEmail'
+import { User } from '@/payload-types';
 import { Access, CollectionConfig } from 'payload/types'
 
-const adminsAndUser: Access = ({ req: { user } }) => {
+export const adminsAndUser: Access = ({ req: { user } }) => {
   if (user.role === 'admin') return true
 
   return {
@@ -10,6 +11,11 @@ const adminsAndUser: Access = ({ req: { user } }) => {
     },
   }
 }
+
+export const isAdmin: Access<any, User> = ({ req: { user } }) => {
+  const isAdmin = user?.role === "admin";
+  return isAdmin;
+};
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -24,6 +30,13 @@ export const Users: CollectionConfig = {
     //   },
     // },
   },
+
+  // access: {
+  //   read: adminsAndUser,
+  //   create: () => true,
+  //   update: isAdmin,
+  //   delete: isAdmin,
+  // },
   access: {
     read: adminsAndUser,
     create: () => true,
@@ -46,16 +59,18 @@ export const Users: CollectionConfig = {
       relationTo: 'products',
       hasMany: true,
     },
-    {
-      name: 'product_files',
-      label: 'Product files',
-      admin: {
-        condition: () => false,
-      },
-      type: 'relationship',
-      relationTo: 'product_files',
-      hasMany: true,
-    },
+
+    // {
+    //   name: 'product_files',
+    //   label: 'Product files',
+    //   admin: {
+    //     condition: () => false,
+    //   },
+    //   type: 'relationship',
+    //   relationTo: 'product_files',
+    //   hasMany: true,
+    // },
+
     {
       name: 'role',
       defaultValue: 'user',
