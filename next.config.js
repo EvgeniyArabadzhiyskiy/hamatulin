@@ -8,10 +8,22 @@ const nextConfig = {
 			},
 			{
 				protocol: "https",
-				hostname: "digitalhippo-production.up.railway.app",
+				hostname: "hamatulin.onrender.com",
+				pathname: '/media/**',
 			},
 		],
 	},
 };
 
 module.exports = nextConfig;
+
+
+// images: {
+//     remotePatterns: [
+//       {
+//         protocol: 'https',
+//         hostname: 'hamatulin.onrender.com',
+//         pathname: '/media/**',
+//       },
+//     ],
+//   },
