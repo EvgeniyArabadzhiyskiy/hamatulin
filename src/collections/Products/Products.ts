@@ -142,8 +142,21 @@ export const Products: CollectionConfig = {
       },
     },
     {
+      name: "order_number",
+      label: "Номер заказа",
+      type: "text",
+      required: true,
+
+      access: {
+        read: () => true,
+        create: ({ req }) => req.user.role === "admin",
+        update: ({ req }) => req.user.role === "admin",
+      },
+    },
+    {
       name: "name",
-      label: "Name",
+      // label: "Name",
+      label: "Заказчик",
       type: "text",
       required: true,
 
@@ -156,15 +169,16 @@ export const Products: CollectionConfig = {
     {
       name: "description",
       type: "textarea",
-      label: "Product details",
+      label: "Детали заказа",
+      // label: "Product details",
     },
     {
       name: "price",
-      label: "Price in USD",
+      label: "Цена",
       min: 0,
       max: 1000,
       type: "number",
-      required: true,
+      // required: true,
 
       access: {
         read: () => true,
@@ -174,9 +188,20 @@ export const Products: CollectionConfig = {
     },
     {
       name: "category",
-      label: "Category",
+      label: "Категория",
       type: "select",
-      options: PRODUCT_CATEGORIES.map(({ label, value }) => ({ label, value })),
+      // options: PRODUCT_CATEGORIES.map(({ label, value }) => ({ label, value })),
+      options: [
+        {
+          label: "Зеркало",
+          value: "mirror",
+        },
+        {
+          label: "Стекло",
+          value: "glass",
+        },
+      
+      ],
       required: true,
     },
 
@@ -191,8 +216,8 @@ export const Products: CollectionConfig = {
 
     {
       name: "approvedForSale",
-      label: "Product Status",
-      defaultValue: "approved",
+      label: "Статус заказа",
+      defaultValue: "pending",
 
       access: {
         // read: ({ req }) => req.user.role === 'admin',
@@ -203,18 +228,33 @@ export const Products: CollectionConfig = {
       type: "select",
       options: [
         {
-          label: "Pending verification",
+          label: "В работе",
           value: "pending",
         },
         {
-          label: "Approved",
+          label: "Выполнен",
           value: "approved",
         },
-        {
-          label: "Denied",
-          value: "denied",
-        },
+        // {
+        //   label: "Pending verification",
+        //   value: "pending",
+        // },
+        // {
+        //   label: "Approved",
+        //   value: "approved",
+        // },
+        // {
+        //   label: "Denied",
+        //   value: "denied",
+        // },
       ],
+    },
+
+    {
+      name: "comment",
+      label: "Комментарий",
+      type: "text",
+      // required: true,
     },
 
     // {
@@ -246,19 +286,40 @@ export const Products: CollectionConfig = {
     {
       name: "images",
       type: "array",
-      label: "Product images",
+      label: "Изображения заказа",
       minRows: 1,
       maxRows: 4,
       // required: true,
       labels: {
-        singular: "Image",
-        plural: "Images",
+        singular: "Изображение",
+        plural: "Изображения",
       },
       fields: [
         {
           name: "image",
           type: "upload",
           relationTo: "media",
+          // required: true,
+        },
+      ],
+    },
+
+    {
+      name: "downloads",
+      type: "array",
+      label: "Чертежи заказа",
+      minRows: 1,
+      maxRows: 4,
+      // required: true,
+      labels: {
+        singular: "Чертеж",
+        plural: "Чертежи",
+      },
+      fields: [
+        {
+          name: "downloads",
+          type: "upload",
+          relationTo: "downloads",
           // required: true,
         },
       ],
