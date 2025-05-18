@@ -36,24 +36,50 @@ const ProductListing = ({ product, index }: ProductListingProps) => {
 
   if (isVisible && product) {
     return (
-      <Link
-        className={cn("invisible h-full w-full cursor-pointer group/main", {
-          "visible animate-in fade-in-5": isVisible,
-        })}
-        href={`/product/${product.id}`}
-      >
-        <div className="flex flex-col w-full">
-          <ImageSlider urls={validUrls} />
+      // <Link
+      //   className={cn("invisible h-full w-full cursor-pointer group/main", {
+      //     "visible animate-in fade-in-5": isVisible,
+      //   })}
+      //   href={`/product/${product.id}`}
+      // >
 
-          <h3 className="mt-4 font-medium text-sm text-gray-700">
-            {product.name}
-          </h3>
-          <p className="mt-1 text-sm text-gray-500">{label}</p>
-          <p className="mt-1 font-medium text-sm text-gray-900">
-            {formatPrice(product.price)}
-          </p>
-        </div>
-      </Link>
+      // <div className="flex flex-col w-full">
+
+      //   <p className="mt-4 font-medium text-sm text-gray-700"> {product.order_number}</p>
+      //   <p className="mt-4 font-medium text-sm text-gray-700"> {product.name}</p>
+      //   <p className="mt-4 font-medium text-sm text-gray-900">{product.price} грн. </p>
+
+      // </div>
+
+      <ul className="w-full text-sm">
+        <li className="grid grid-cols-4 gap-4 px-4 py-2 border-b">
+          <span>{product.order_number}</span>
+          <span>{product.name}</span>
+          <span className="text-gray-900">{product.approvedForSale === "approved" ? "Выполнен" : "В работе"}</span>
+          <span className="text-gray-900">{product.price} грн.</span>
+        </li>
+      </ul>
+
+      // </Link>
+
+      // <Link
+      //   className={cn("invisible h-full w-full cursor-pointer group/main", {
+      //     "visible animate-in fade-in-5": isVisible,
+      //   })}
+      //   href={`/product/${product.id}`}
+      // >
+      //   <div className="flex flex-col w-full">
+      //     <ImageSlider urls={validUrls} />
+
+      //     <h3 className="mt-4 font-medium text-sm text-gray-700">
+      //       {product.name}
+      //     </h3>
+      //     <p className="mt-1 text-sm text-gray-500">{label}</p>
+      //     <p className="mt-1 font-medium text-sm text-gray-900">
+      //       {formatPrice(product.price)}
+      //     </p>
+      //   </div>
+      // </Link>
     );
   }
 
