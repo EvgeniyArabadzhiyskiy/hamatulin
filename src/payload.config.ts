@@ -7,6 +7,7 @@ import { Users } from "./collections/Users";
 import dotenv from "dotenv";
 import { Products } from "./collections/Products/Products";
 import { Media } from "./collections/Media";
+import { Downloads } from "./collections/Downloads";
 // import { ProductFiles } from "./collections/ProductFile";
 // import { Orders } from "./collections/Orders";
 
@@ -20,6 +21,7 @@ export default buildConfig({
     Users, 
     Products,
     Media, 
+    Downloads,
     // ProductFiles, 
     // Orders
   ],
