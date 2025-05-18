@@ -109,8 +109,15 @@ const ProductReel = (props: ProductReelProps) => {
       />
 
       <div className="relative">
-        <div className="mt-6 flex items-center w-full">
-          <div className="w-full grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-10 lg:gap-x-8">
+        <div className="mt-6">
+          <div>
+            <div className="grid grid-cols-4 gap-4 px-4 py-2 bg-gray-100 text-gray-700 font-semibold">
+              <span>Номер заказа</span>
+              <span>Заказчик</span>
+              <span>Статус</span>
+              <span>Цена</span>
+            </div>
+
             {map.map((product, i) => (
               <ProductListing
                 key={`product-${i}`}
@@ -120,6 +127,17 @@ const ProductReel = (props: ProductReelProps) => {
             ))}
           </div>
         </div>
+        {/* <div className="mt-6 flex items-center w-full">
+          <div className="w-full grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4 md:gap-y-10 lg:gap-x-8">
+            {map.map((product, i) => (
+              <ProductListing
+                key={`product-${i}`}
+                product={product}
+                index={i}
+              />
+            ))}
+          </div>
+        </div> */}
         {hasNextPage && (
           <button
             style={{
